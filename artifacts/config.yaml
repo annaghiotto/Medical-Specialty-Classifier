@@ -1,0 +1,10 @@
+batch_size: 32
+classifier:
+  C: 15
+  class_weight: balanced
+  kind: LinearSVC
+  loss: squared_hinge
+max_len: 384
+min_per_class: 40
+rare_strategy: drop
+truncate_sent: 8
