@@ -1,0 +1,18 @@
+# Example 1 — *Cardiology / Pulmonology*
+
+**Text:**
+A 67-year-old male presents with chest pain radiating to the left arm and shortness of breath for two hours. ECG reveals ST-segment elevation in anterior leads and troponin is positive. Patient was started on aspirin, heparin, and taken for emergency coronary angiography showing LAD occlusion successfully stented.
+
+---
+
+# Example 2 — *Neurology*
+
+**Text:**
+A 45-year-old woman presents with recurrent headaches and transient visual blurring over the past three months. Neurological exam shows mild papilledema. MRI of the brain demonstrates no mass lesion but mild increase in intracranial pressure consistent with idiopathic intracranial hypertension.
+
+---
+
+# Example 3 — *Orthopedic*
+
+**Text:**
+A 34-year-old male reports twisting his right knee while playing soccer yesterday. On exam there is joint effusion, medial joint line tenderness, and positive McMurray test. MRI confirms a medial meniscus tear. Plan for arthroscopic partial meniscectomy discussed.

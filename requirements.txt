@@ -1,0 +1,15 @@
+torch
+transformers
+accelerate
+safetensors
+huggingface-hub
+scikit-learn
+pandas
+numpy
+matplotlib
+tqdm
+seaborn
+pyyaml
+joblib
+fastapi
+uvicorn
