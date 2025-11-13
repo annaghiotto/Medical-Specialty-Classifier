@@ -1,9 +1,11 @@
 # src/infer.py
-import json, os
+import json
+import os
+
 import numpy as np
-from sklearn.preprocessing import normalize
-from transformers import AutoTokenizer, AutoModel
 import torch
+from sklearn.preprocessing import normalize
+from transformers import AutoModel, AutoTokenizer
 
 MIN_WORDS = 20
 
@@ -24,14 +26,15 @@ class MedicalSpecialtyPredictor:
         if not (os.path.exists(enc_path) and os.path.exists(clf_path) and os.path.exists(labels_path)):
             raise FileNotFoundError("Missing artifact (encoder_name.txt / classifier.joblib / label_list.json) in 'artifacts/'")
 
-        self.encoder_name = open(enc_path, "r", encoding="utf-8").read().strip()
+        self.encoder_name = open(enc_path, encoding="utf-8").read().strip()
 
-        import joblib, yaml
+        import joblib
+        import yaml
         self.clf = joblib.load(clf_path)
-        self.labels = json.load(open(labels_path, "r", encoding="utf-8"))
+        self.labels = json.load(open(labels_path, encoding="utf-8"))
         self.cfg = dict(max_len=384, batch_size=32)
         if os.path.exists(cfg_path):
-            self.cfg.update(yaml.safe_load(open(cfg_path, "r", encoding="utf-8")) or {})
+            self.cfg.update(yaml.safe_load(open(cfg_path, encoding="utf-8")) or {})
 
         self.tok = AutoTokenizer.from_pretrained(self.encoder_name)
         self.mdl = AutoModel.from_pretrained(self.encoder_name).to("cuda" if torch.cuda.is_available() else "cpu")
@@ -84,7 +87,7 @@ class MedicalSpecialtyPredictor:
                     # binary -> shape (m, 2)
                     scores = np.stack([-scores, scores], axis=1)
 
-                max_scores = scores.max(axis=1)
+                # max_scores = scores.max(axis=1)
                 order = np.argsort(scores, axis=1)[:, ::-1]  # desc
 
                 for pos, i in enumerate(normal_idx):

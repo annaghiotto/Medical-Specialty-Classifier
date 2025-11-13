@@ -1,11 +1,14 @@
-import argparse, os, re
+import argparse
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from tqdm.auto import tqdm
-from sklearn.model_selection import GridSearchCV, train_test_split, StratifiedShuffleSplit
+import seaborn as sns
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
+from sklearn.model_selection import GridSearchCV, StratifiedShuffleSplit, train_test_split
 from sklearn.preprocessing import normalize
-from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
-import matplotlib.pyplot as plt
+from tqdm.auto import tqdm
 
 # =============== Utils: run tag & plotting ===============
 
@@ -25,14 +28,15 @@ def make_run_tag(args):
     return "__".join(safe)
 
 def plot_confusion(y_true, y_pred, title="Confusion Matrix", save_path=None):
-    import seaborn as sns
     labels = np.unique(np.array(y_true))
     cm = confusion_matrix(y_true, y_pred, labels=labels)
     cm = cm.astype(float) / cm.sum(axis=1, keepdims=True)
     plt.figure(figsize=(16, 14))
     sns.heatmap(cm, xticklabels=labels, yticklabels=labels,
                 annot=False, cmap="Blues", square=False)
-    plt.title(title); plt.xlabel("Predicted"); plt.ylabel("True")
+    plt.title(title)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
     plt.tight_layout()
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -133,7 +137,8 @@ def encode_texts(texts, tok, model, batch_size=16, max_len=256):
         for i in tqdm(range(0, len(texts), batch_size), desc="Encoding"):
             batch = texts[i:i+batch_size]
             enc = tok(batch, padding=True, truncation=True, max_length=max_len, return_tensors="pt")
-            for k in enc: enc[k] = enc[k].to(model.device)
+            for k in enc:
+                enc[k] = enc[k].to(model.device)
             out = model(**enc)
             pooled = mean_pool(out.last_hidden_state, enc["attention_mask"])
             embs.append(pooled)
@@ -143,8 +148,8 @@ def eval_frozen_encoder(train_df, test_df,
                         encoder_name="emilyalsentzer/Bio_ClinicalBERT",
                         clf_type="svm", save_tag=None,
                         batch_size=16, max_len=256):
-    from transformers import AutoTokenizer, AutoModel
     import torch
+    from transformers import AutoModel, AutoTokenizer
     tok = AutoTokenizer.from_pretrained(encoder_name)
     mdl = AutoModel.from_pretrained(encoder_name).to("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -153,7 +158,8 @@ def eval_frozen_encoder(train_df, test_df,
     y_train = train_df["label"].tolist()
     y_test  = test_df["label"].tolist()
 
-    X_train = normalize(X_train); X_test = normalize(X_test)
+    X_train = normalize(X_train)
+    X_test = normalize(X_test)
 
     # classifier + gridsearch
     if clf_type == "svm":

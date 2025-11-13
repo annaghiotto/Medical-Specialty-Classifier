@@ -1,6 +1,9 @@
 # src/cli.py
-import argparse, json
+import argparse
+import json
+
 from .infer import MedicalSpecialtyPredictor
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -18,13 +21,13 @@ def main():
         return
 
     if args.file:
-        texts = [l.strip() for l in open(args.file, encoding="utf-8")]
+        texts = [line.strip() for line in open(args.file, encoding="utf-8")]
         outs = pred.predict(texts, topk=args.topk)
-        for t, o in zip(texts, outs):
+        for t, o in zip(texts, outs, strict=True):
             print(json.dumps({"input": t[:160] + ("..." if len(t) > 160 else ""), "pred": o}, ensure_ascii=False))
         return
 
-    ap.error("Passa --text o --file")
+    ap.error("Expected --text or --file")
 
 if __name__ == "__main__":
     main()

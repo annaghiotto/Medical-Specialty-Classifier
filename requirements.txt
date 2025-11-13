@@ -13,3 +13,4 @@ pyyaml
 joblib
 fastapi
 uvicorn
+pytest

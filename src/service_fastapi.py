@@ -1,6 +1,7 @@
 # src/service_fastapi.py
 from fastapi import FastAPI
 from pydantic import BaseModel
+
 from .infer import MedicalSpecialtyPredictor
 
 app = FastAPI(title="Medical Specialty Classifier", version="0.1.0")

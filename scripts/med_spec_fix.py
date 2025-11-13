@@ -1,12 +1,16 @@
 import datetime
 import json
-import os, numpy as np, pandas as pd, matplotlib.pyplot as plt
+import os
 import subprocess
-from tqdm.auto import tqdm
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
-from sklearn.preprocessing import normalize
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import yaml
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
+from sklearn.model_selection import StratifiedShuffleSplit, train_test_split
+from sklearn.preprocessing import normalize
+from tqdm.auto import tqdm
 
 # ==== BEST CONFIG ====
 CSV_PATH   = "data/mtsamples_clean.csv"  # must contain: text, label
@@ -35,7 +39,9 @@ def plot_confusion(y_true, y_pred, title="Confusion Matrix", save_path=None):
     plt.figure(figsize=(16, 14))
     sns.heatmap(cm, xticklabels=labels, yticklabels=labels,
                 annot=False, cmap="Blues", square=False)
-    plt.title(title); plt.xlabel("Predicted"); plt.ylabel("True")
+    plt.title(title)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
     plt.tight_layout()
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -97,7 +103,6 @@ def split_data(df, test_size=0.2, seed=42,
 # =============== Encoder ===============
 
 def mean_pool(last_hidden_state, attention_mask):
-    import torch
     mask = attention_mask.unsqueeze(-1).expand(last_hidden_state.size()).float()
     summed = (last_hidden_state * mask).sum(1)
     counts = mask.sum(1).clamp(min=1e-9)
@@ -111,7 +116,8 @@ def encode_texts(texts, tok, model, batch_size=BATCH_SIZE, max_len=MAX_LEN):
         for i in tqdm(range(0, len(texts), batch_size), desc="Encoding"):
             batch = texts[i:i+batch_size]
             enc = tok(batch, padding=True, truncation=True, max_length=max_len, return_tensors="pt")
-            for k in enc: enc[k] = enc[k].to(model.device)
+            for k in enc:
+                enc[k] = enc[k].to(model.device)
             out = model(**enc)
             pooled = mean_pool(out.last_hidden_state, enc["attention_mask"])
             embs.append(pooled)
@@ -141,7 +147,7 @@ def save_artifacts(clf, labels, artifacts_dir="artifacts"):
         sha = subprocess.check_output(["git","rev-parse","--short","HEAD"]).decode().strip()
     except Exception:
         sha = "nogit"
-    ts = datetime.datetime.now(datetime.timezone.utc).isoformat() + "Z"
+    ts = datetime.datetime.now(datetime.UTC).isoformat() + "Z"
     open(os.path.join(artifacts_dir, "version.txt"), "w", encoding="utf-8").write(f"v0.1.0+{sha}  {ts}\n")
     print(f"[OK] Artifacts saved in: {artifacts_dir}/")
 
@@ -159,8 +165,8 @@ def run_fixed_pipeline():
     if used == "train_only" and rare_list_or_none:
         test_df = test_df[~test_df["label"].isin(rare_list_or_none)].reset_index(drop=True)
 
-    from transformers import AutoTokenizer, AutoModel
     import torch
+    from transformers import AutoModel, AutoTokenizer
     tok = AutoTokenizer.from_pretrained(ENCODER)
     mdl = AutoModel.from_pretrained(ENCODER).to("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -169,7 +175,8 @@ def run_fixed_pipeline():
     y_train = train_df["label"].tolist()
     y_test  = test_df["label"].tolist()
 
-    X_train = normalize(X_train); X_test = normalize(X_test)
+    X_train = normalize(X_train)
+    X_test = normalize(X_test)
 
     from sklearn.svm import LinearSVC
     clf = LinearSVC(C=C_SVM, loss=LOSS_SVM, class_weight="balanced", max_iter=5000)
@@ -182,7 +189,7 @@ def run_fixed_pipeline():
     print(f"Top-1: {acc:.3f} | Macro-F1: {f1m:.3f}\n")
     print(classification_report(y_test, y_pred, digits=3))
 
-    title = f"Confusion Matrix"
+    title = "Confusion Matrix"
     outpath = f"plots/{title}.png"
     plot_confusion(y_test, y_pred, title=title, save_path=outpath)
     print(f"[OK] Confusion matrix salvata in: {outpath}")
