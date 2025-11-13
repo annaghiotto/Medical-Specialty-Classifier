@@ -1,0 +1,13 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: medspec-api:cpu
+    ports:
+      - "8000:8000"
+    environment:
+      - UVICORN_PORT=8000
+      - HF_HOME=/root/.cache/huggingface
+    volumes:
+      - ./artifacts:/app/artifacts
