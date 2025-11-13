@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import subprocess
+import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,6 +12,7 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 from sklearn.model_selection import StratifiedShuffleSplit, train_test_split
 from sklearn.preprocessing import normalize
 from tqdm.auto import tqdm
+from tsne_vis import plot_tsne_3d
 
 # ==== BEST CONFIG ====
 CSV_PATH   = "data/mtsamples_clean.csv"  # must contain: text, label
@@ -38,7 +40,7 @@ def plot_confusion(y_true, y_pred, title="Confusion Matrix", save_path=None):
     cm = cm.astype(float) / cm.sum(axis=1, keepdims=True)
     plt.figure(figsize=(16, 14))
     sns.heatmap(cm, xticklabels=labels, yticklabels=labels,
-                annot=False, cmap="Blues", square=False)
+                annot=True, cmap="Blues", square=False)
     plt.title(title)
     plt.xlabel("Predicted")
     plt.ylabel("True")
@@ -153,7 +155,7 @@ def save_artifacts(clf, labels, artifacts_dir="artifacts"):
 
 # =============== Pipeline (BioClinicalBERT + LinearSVC C=15, squared_hinge) ===============
 
-def run_fixed_pipeline():
+def run_fixed_pipeline(do_tsne=True, do_confusion=True):
     df = load_data(CSV_PATH)
 
     df["text"] = df["text"].apply(lambda t: truncate_text(t, max_sent=TRUNCATE_SENT))
@@ -175,8 +177,19 @@ def run_fixed_pipeline():
     y_train = train_df["label"].tolist()
     y_test  = test_df["label"].tolist()
 
+    os.makedirs("artifacts", exist_ok=True)
+    np.savez(
+        "artifacts/tsne_train_embeddings.npz",
+        X=X_train,
+        y=np.array(y_train, dtype="U"),
+    )
+    print("[INFO] Saved TSNE cache to artifacts/tsne_train_embeddings.npz")
+
     X_train = normalize(X_train)
     X_test = normalize(X_test)
+
+    if do_tsne:
+        plot_tsne_3d(X_train, y_train, n_samples=1500, perplexity=40)
 
     from sklearn.svm import LinearSVC
     clf = LinearSVC(C=C_SVM, loss=LOSS_SVM, class_weight="balanced", max_iter=5000)
@@ -189,13 +202,33 @@ def run_fixed_pipeline():
     print(f"Top-1: {acc:.3f} | Macro-F1: {f1m:.3f}\n")
     print(classification_report(y_test, y_pred, digits=3))
 
-    title = "Confusion Matrix"
-    outpath = f"plots/{title}.png"
-    plot_confusion(y_test, y_pred, title=title, save_path=outpath)
-    print(f"[OK] Confusion matrix salvata in: {outpath}")
+    if do_confusion:
+        title = f"Confusion Matrix - {ENCODER} + LinearSVC(C={C_SVM}, loss={LOSS_SVM})"
+        filename = f"cm_BioClinicalBERT_SVM_C{C_SVM}_{LOSS_SVM}.png"
+        outpath = os.path.join("plots", filename)
+        plot_confusion(y_test, y_pred, title=title, save_path=outpath)
+        print(f"[OK] Confusion matrix salvata in: {outpath}")
+
 
     all_labels = list(pd.concat([train_df["label"], test_df["label"]]).unique())
     save_artifacts(clf, all_labels, artifacts_dir="artifacts")
 
 if __name__ == "__main__":
-    run_fixed_pipeline()
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--tsne_only", action="store_true",
+                    help="Only plot t-SNE 3D.")
+    ap.add_argument("--no_tsne", action="store_true",
+                    help="No t-SNE.")
+    ap.add_argument("--no_confusion", action="store_true",
+                    help="No confusion matrix.")
+    args = ap.parse_args()
+
+    if args.tsne_only:
+        do_tsne = True
+        do_conf = False
+    else:
+        do_tsne = not args.no_tsne
+        do_conf = not args.no_confusion
+
+    run_fixed_pipeline(do_tsne=do_tsne, do_confusion=do_conf)
