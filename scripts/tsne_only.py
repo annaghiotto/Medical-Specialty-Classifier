@@ -1,10 +1,12 @@
 import os
+
 import numpy as np
 import pandas as pd
-from sklearn.manifold import TSNE
 import plotly.express as px
+from sklearn.manifold import TSNE
 
 CACHE_PATH = "artifacts/tsne_train_embeddings.npz"
+
 
 def plot_tsne_3d_from_cache(
     cache_path=CACHE_PATH,
@@ -30,13 +32,13 @@ def plot_tsne_3d_from_cache(
     if len(df) > n_samples:
         df_sampled = (
             df.groupby("label", group_keys=False)
-              .apply(
-                  lambda g: g.sample(
-                      min(len(g), max(30, n_samples // df["label"].nunique())),
-                      random_state=random_state,
-                  )
-              )
-              .reset_index(drop=True)
+            .apply(
+                lambda g: g.sample(
+                    min(len(g), max(30, n_samples // df["label"].nunique())),
+                    random_state=random_state,
+                )
+            )
+            .reset_index(drop=True)
         )
     else:
         df_sampled = df
@@ -57,12 +59,14 @@ def plot_tsne_3d_from_cache(
     )
     X_3d = tsne.fit_transform(X_s)
 
-    vis_df = pd.DataFrame({
-        "x": X_3d[:, 0],
-        "y": X_3d[:, 1],
-        "z": X_3d[:, 2],
-        "label": y_s,
-    })
+    vis_df = pd.DataFrame(
+        {
+            "x": X_3d[:, 0],
+            "y": X_3d[:, 1],
+            "z": X_3d[:, 2],
+            "label": y_s,
+        }
+    )
 
     fig = px.scatter_3d(
         vis_df,
@@ -77,15 +81,17 @@ def plot_tsne_3d_from_cache(
     fig.update_traces(marker=dict(size=4))
 
     os.makedirs("plots", exist_ok=True)
-    fig.write_html("plots/tsne_3d.html")   # interactive
-    fig.write_image("plots/tsne_3d.png", scale=2)   # PNG
+    fig.write_html("plots/tsne_3d.html")  # interactive
+    fig.write_image("plots/tsne_3d.png", scale=2)  # PNG
 
     print("[INFO] Saved 3D t-SNE")
 
     fig.show()
 
+
 if __name__ == "__main__":
     import argparse
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--cache", type=str, default=CACHE_PATH, help="Path npz with X,y")
     ap.add_argument("--n_samples", type=int, default=1500)

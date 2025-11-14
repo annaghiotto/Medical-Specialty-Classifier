@@ -1,13 +1,13 @@
 # 🧠 Medical Specialty Classifier
 
-A Natural Language Processing system for predicting the **medical specialty** of a clinical transcription.  
+A Natural Language Processing system for predicting the **medical specialty** of a clinical transcription.
 The model uses a domain-specific encoder and a lightweight classifier to assign each note (e.g., surgery report, radiology exam, discharge summary) to its correct specialty.
 
 ---
 
 ## 📘 Dataset
 
-The model is trained and evaluated on the [**Medical Transcriptions Dataset**](https://www.kaggle.com/datasets/tboyle10/medicaltranscriptions/data),  
+The model is trained and evaluated on the [**Medical Transcriptions Dataset**](https://www.kaggle.com/datasets/tboyle10/medicaltranscriptions/data),
 which contains 2,000+ real-world medical dictations across dozens of specialties.
 
 Each record includes fields such as:

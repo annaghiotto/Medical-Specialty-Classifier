@@ -8,7 +8,9 @@ from .infer import MedicalSpecialtyPredictor
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--text", type=str, help="Text to classify")
-    ap.add_argument("--file", type=str, help="File .txt with one report per line (UTF-8)")
+    ap.add_argument(
+        "--file", type=str, help="File .txt with one report per line (UTF-8)"
+    )
     ap.add_argument("--topk", type=int, default=3)
     ap.add_argument("--artifacts", type=str, default="artifacts")
     args = ap.parse_args()
@@ -24,10 +26,16 @@ def main():
         texts = [line.strip() for line in open(args.file, encoding="utf-8")]
         outs = pred.predict(texts, topk=args.topk)
         for t, o in zip(texts, outs, strict=True):
-            print(json.dumps({"input": t[:160] + ("..." if len(t) > 160 else ""), "pred": o}, ensure_ascii=False))
+            print(
+                json.dumps(
+                    {"input": t[:160] + ("..." if len(t) > 160 else ""), "pred": o},
+                    ensure_ascii=False,
+                )
+            )
         return
 
     ap.error("Expected --text or --file")
+
 
 if __name__ == "__main__":
     main()

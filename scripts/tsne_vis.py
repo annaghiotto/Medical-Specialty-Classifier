@@ -1,6 +1,7 @@
-from sklearn.manifold import TSNE
 import numpy as np
 import pandas as pd
+from sklearn.manifold import TSNE
+
 
 def plot_tsne_3d(X, labels, n_samples=1500, perplexity=40, random_state=42):
     """
@@ -19,9 +20,13 @@ def plot_tsne_3d(X, labels, n_samples=1500, perplexity=40, random_state=42):
     if len(df) > n_samples:
         df_sampled = (
             df.groupby("label", group_keys=False)
-              .apply(lambda g: g.sample(min(len(g), max(50, n_samples // df["label"].nunique())),
-                                        random_state=random_state))
-              .reset_index(drop=True)
+            .apply(
+                lambda g: g.sample(
+                    min(len(g), max(50, n_samples // df["label"].nunique())),
+                    random_state=random_state,
+                )
+            )
+            .reset_index(drop=True)
         )
     else:
         df_sampled = df
@@ -42,12 +47,14 @@ def plot_tsne_3d(X, labels, n_samples=1500, perplexity=40, random_state=42):
     )
     X_3d = tsne.fit_transform(X_s)
 
-    vis_df = pd.DataFrame({
-        "x": X_3d[:, 0],
-        "y": X_3d[:, 1],
-        "z": X_3d[:, 2],
-        "label": y_s,
-    })
+    vis_df = pd.DataFrame(
+        {
+            "x": X_3d[:, 0],
+            "y": X_3d[:, 1],
+            "z": X_3d[:, 2],
+            "label": y_s,
+        }
+    )
 
     fig = px.scatter_3d(
         vis_df,

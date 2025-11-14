@@ -7,12 +7,15 @@ from .infer import MedicalSpecialtyPredictor
 app = FastAPI(title="Medical Specialty Classifier", version="0.1.0")
 predictor = MedicalSpecialtyPredictor("artifacts")
 
+
 class PredictIn(BaseModel):
     text: str
     topk: int = 3
 
+
 class PredictOut(BaseModel):
     labels: list[str]
+
 
 @app.post("/predict", response_model=PredictOut)
 def predict(item: PredictIn):
