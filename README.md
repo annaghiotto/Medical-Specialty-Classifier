@@ -22,8 +22,8 @@ Each record includes fields such as:
 | Component | Description |
 |------------|-------------|
 | **Dataset preprocessing** | Cleans text, merges transcription with description/keywords, and filters rare classes. |
-| **Encoder** | [`emilyalsentzer/Bio_ClinicalBERT`](https://huggingface.co/emilyalsentzer/Bio_ClinicalBERT), a domain-tuned transformer for clinical text. |
-| **Classifier** | SVM with linear kernel (`C=15`, `squared_hinge` loss). |
+| **Encoder** | [/Bio_ClinicalBERT](https://huggingface.co/emilyalsentzer/Bio_ClinicalBERT), a domain-tuned transformer for clinical text. |
+| **Classifier** | SVM with linear kernel. |
 | **Frameworks** | 🤗 `transformers`, `scikit-learn`, `fastapi`, `uvicorn`, `joblib`. |
 | **Artifacts** | Encoder name, trained classifier, and label list are saved under `artifacts/`. |
 | **API** | RESTful interface built with FastAPI. |
