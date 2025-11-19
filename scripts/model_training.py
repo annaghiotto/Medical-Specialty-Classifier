@@ -20,13 +20,13 @@ from tqdm.auto import tqdm
 def make_run_tag(args):
     enc = args.encoder.split("/")[-1] if hasattr(args, "encoder") else "enc"
     parts = [
-        f"mode={getattr(args,'mode','')}",
+        f"mode={getattr(args, 'mode', '')}",
         f"enc={enc}",
-        f"clf={getattr(args,'clf','')}",
-        f"k={getattr(args,'min_per_class','')}",
-        f"rare={getattr(args,'rare_strategy','')}",
-        f"maxlen={getattr(args,'max_len',256)}",
-        f"bs={getattr(args,'batch_size',16)}",
+        f"clf={getattr(args, 'clf', '')}",
+        f"k={getattr(args, 'min_per_class', '')}",
+        f"rare={getattr(args, 'rare_strategy', '')}",
+        f"maxlen={getattr(args, 'max_len', 256)}",
+        f"bs={getattr(args, 'batch_size', 16)}",
         ("notrunc" if getattr(args, "no_truncate", False) else "trunc"),
     ]
     safe = [p.replace("/", "-").replace(" ", "") for p in parts if p]

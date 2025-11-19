@@ -272,7 +272,7 @@ with col_input:
     example_cols = st.columns(3)
 
     for example_name, example_text in EXAMPLES.items():
-        st.markdown(f"- {example_text}\n\n" f"  Expected output: {example_name}")
+        st.markdown(f"- {example_text}\n\n  Expected output: {example_name}")
 
     if predict_clicked:
         if not text.strip():
