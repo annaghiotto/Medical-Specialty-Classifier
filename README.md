@@ -54,6 +54,3 @@ The confusion matrix illustrates the model's ability to correctly classify each 
 Example:
 Input: "A 34-year-old male with knee effusion, medial joint line tenderness, positive McMurray..."
 Output: ["Orthopedic", "Surgery", "Radiology"]
-
-## 🚀 Following
-Next step: integrate the model with a FastAPI interface to make it accessible on a custom interface.
