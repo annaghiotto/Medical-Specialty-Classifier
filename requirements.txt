@@ -16,3 +16,4 @@ uvicorn
 pytest
 plotly
 kaleido
+streamlit
