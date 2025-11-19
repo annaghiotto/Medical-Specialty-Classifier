@@ -3,6 +3,8 @@
 A Natural Language Processing system for predicting the **medical specialty** of a clinical transcription.
 The model uses a domain-specific encoder and a lightweight classifier to assign each note (e.g., surgery report, radiology exam, discharge summary) to its correct specialty.
 
+![Interface](plots/PageScreenshot_Empty.png)
+
 ---
 
 ## 📘 Dataset
