@@ -4,10 +4,8 @@ repos:
     rev: v0.4.4
     hooks:
       - id: ruff
-        name: ruff (lint)
+        name: ruff (lint + fix)
         args: [--fix]
-      - id: ruff-format
-        name: ruff (format)
 
   # Black
   - repo: https://github.com/psf/black
@@ -21,7 +19,4 @@ repos:
     hooks:
       - id: end-of-file-fixer
 
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
-    hooks:
       - id: trailing-whitespace
