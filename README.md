@@ -3,6 +3,8 @@
 A Natural Language Processing system for predicting the **medical specialty** of a clinical transcription.
 The model uses a domain-specific encoder and a lightweight classifier to assign each note (e.g., surgery report, radiology exam, discharge summary) to its correct specialty.
 
+![Interface](plots/PageScreenshot_Empty.png)
+
 ---
 
 ## 📘 Dataset
@@ -52,6 +54,3 @@ The confusion matrix illustrates the model's ability to correctly classify each 
 Example:
 Input: "A 34-year-old male with knee effusion, medial joint line tenderness, positive McMurray..."
 Output: ["Orthopedic", "Surgery", "Radiology"]
-
-## 🚀 Following
-Next step: integrate the model with a FastAPI interface to make it accessible on a custom interface.
