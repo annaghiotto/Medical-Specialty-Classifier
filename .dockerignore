@@ -6,6 +6,12 @@ __pycache__/
 .env
 .venv/
 venv/
+.pytest_cache/
+.mypy_cache/
+ruff_cache/
+dist/
+build/
+*.egg-info/
 
 # Git & OS
 .git/
@@ -17,6 +23,13 @@ venv/
 data/
 notebooks/
 outputs/
+artifacts/
+*.bin
+*.pt
+*.safetensors
+*.onnx
+*.pkl
+*.joblib
 
 # Cache
 .cache/

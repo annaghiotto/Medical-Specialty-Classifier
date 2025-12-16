@@ -1,35 +1,13 @@
-FROM python:3.11-slim AS base
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    HF_HOME=/root/.cache/huggingface \
-    UVICORN_PORT=8000
-
+FROM python:3.11-slim
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl tini && \
-    rm -rf /var/lib/apt/lists/*
+COPY requirements-ui.txt .
 
-FROM base AS deps
+RUN pip install --upgrade pip \
+ && pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch \
+ && pip install --no-cache-dir -r requirements-ui.txt
 
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-FROM deps AS app
-
-COPY artifacts/ ./artifacts/
 COPY src/ ./src/
 
-RUN python - <<'PY'
-from transformers import AutoTokenizer, AutoModel
-enc = open("artifacts/encoder_name.txt").read().strip()
-AutoTokenizer.from_pretrained(enc)
-AutoModel.from_pretrained(enc)
-print("Pre-downloaded:", enc)
-PY
-
-EXPOSE 8000
-ENTRYPOINT ["/usr/bin/tini","--"]
-CMD ["uvicorn","src.service_fastapi:app","--host","0.0.0.0","--port","8000"]
+EXPOSE 8501
+CMD ["streamlit","run","src/app_streamlit.py","--server.address=0.0.0.0","--server.port=8501"]
