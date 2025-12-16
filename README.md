@@ -7,6 +7,13 @@ The model uses a domain-specific encoder and a lightweight classifier to assign 
 
 ---
 
+## 🚦 How to Run
+ ```
+git clone https://github.com/annaghiotto/Medical-Specialty-Classifier.git
+cd Medical-Specialty-Classifier
+docker compose up --build
+ ```
+
 ## 📘 Dataset
 
 The model is trained and evaluated on the [**Medical Transcriptions Dataset**](https://www.kaggle.com/datasets/tboyle10/medicaltranscriptions/data),
